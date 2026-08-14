@@ -1,0 +1,3 @@
+DB_USERNAME=postgres
+DB_PASSWORD=0000
+JWT_SECRET=<generate the secret using 'openssl rand -base64 32'>

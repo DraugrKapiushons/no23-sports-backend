@@ -1,0 +1,15 @@
+DB_USERNAME=postgres
+DB_PASSWORD=0000
+JWT_SECRET=<generate the secret using 'openssl rand -base64 32'>
+EUREKA_URL=http://localhost:8761/eureka
+
+# From your Iyzico merchant panel (sandbox panel for the sandbox base URL below).
+IYZICO_API_KEY=<your Iyzico sandbox/production API key>
+IYZICO_SECRET_KEY=<your Iyzico sandbox/production secret key>
+IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
+# Must be a publicly reachable URL once past local dev - Iyzico POSTs the
+# checkout-form result here.
+IYZICO_CALLBACK_URL=http://localhost:8080/payments/callback
+
+FRONTEND_PAYMENT_SUCCESS_URL=http://localhost:3000/payment/success
+FRONTEND_PAYMENT_FAILURE_URL=http://localhost:3000/payment/failure

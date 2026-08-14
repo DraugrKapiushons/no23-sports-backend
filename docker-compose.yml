@@ -1,0 +1,148 @@
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+    service-registry:
+      condition: service_healthy
+  environment: &service-env
+    DB_HOST: postgres
+    DB_USERNAME: ${POSTGRES_USER}
+    DB_PASSWORD: ${POSTGRES_PASSWORD}
+    JWT_SECRET: ${JWT_SECRET}
+    EUREKA_URL: http://service-registry:8761/eureka
+
+services:
+  postgres:
+    image: docker.io/library/postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro,Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  service-registry:
+    build: ./ServiceRegistry
+    restart: unless-stopped
+    healthcheck:
+      # No actuator dependency in this repo (yet) - hit Eureka's built-in
+      # status page instead of a /actuator/health endpoint that doesn't exist.
+      test: ["CMD", "wget", "-qO-", "http://localhost:8761/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  api-gateway:
+    build: ./ApiGateway
+    restart: unless-stopped
+    depends_on:
+      service-registry:
+        condition: service_healthy
+    environment:
+      EUREKA_URL: http://service-registry:8761/eureka
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+    ports:
+      # The only port you actually need to remember - everything goes
+      # through here.
+      - "8080:8080"
+
+  auth-service:
+    <<: *service-defaults
+    build: ./AuthService
+    environment:
+      <<: *service-env
+
+  lesson-service:
+    <<: *service-defaults
+    build: ./LessonService
+    environment:
+      <<: *service-env
+
+  user-profile-service:
+    <<: *service-defaults
+    build: ./UserProfileService
+    environment:
+      <<: *service-env
+
+  menu-service:
+    <<: *service-defaults
+    build: ./KitchenMenuService
+    environment:
+      <<: *service-env
+
+  subscription-service:
+    <<: *service-defaults
+    build: ./KitchenSubscriptionService
+    environment:
+      <<: *service-env
+
+  mealplan-service:
+    <<: *service-defaults
+    build: ./MealPlanService
+    environment:
+      <<: *service-env
+
+  payment-service:
+    <<: *service-defaults
+    build: ./PaymentService
+    environment:
+      <<: *service-env
+      IYZICO_API_KEY: ${IYZICO_API_KEY}
+      IYZICO_SECRET_KEY: ${IYZICO_SECRET_KEY}
+      IYZICO_BASE_URL: ${IYZICO_BASE_URL:-https://sandbox-api.iyzipay.com}
+      IYZICO_CALLBACK_URL: ${IYZICO_CALLBACK_URL}
+      FRONTEND_PAYMENT_SUCCESS_URL: ${FRONTEND_PAYMENT_SUCCESS_URL}
+      FRONTEND_PAYMENT_FAILURE_URL: ${FRONTEND_PAYMENT_FAILURE_URL}
+
+  success-story-service:
+    <<: *service-defaults
+    build: ./SuccessStoryService
+    environment:
+      <<: *service-env
+
+  membership-service:
+    <<: *service-defaults
+    build: ./MembershipService
+    environment:
+      <<: *service-env
+
+  instructor-service:
+    <<: *service-defaults
+    build: ./InstructorService
+    environment:
+      <<: *service-env
+
+  blog-service:
+    <<: *service-defaults
+    build: ./BlogService
+    environment:
+      <<: *service-env
+
+  faq-service:
+    <<: *service-defaults
+    build: ./FaqService
+    environment:
+      <<: *service-env
+
+  reservation-service:
+    <<: *service-defaults
+    build: ./ReservationService
+    environment:
+      <<: *service-env
+
+  calorie-tracking-service:
+    <<: *service-defaults
+    build: ./CalorieTrackingService
+    environment:
+      <<: *service-env
+
+volumes:
+  postgres-data:
