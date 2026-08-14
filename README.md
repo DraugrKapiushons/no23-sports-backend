@@ -277,7 +277,7 @@ Beslenme hedefleri UserProfile / MealPlan akışlarında mevcuttur; ancak ayrı 
 - Daha zengin ders meta verisi (süre, zorluk, ortalama yakılan kalori, kimler için uygun…) — Lesson modeline göre kısmen mevcut olabilir
 
 #### 8. Frontend / İstemci
-Bu depo **yalnızca backend**’dir. Tam web sitesi (video arka planlı ana sayfa, üyelik karşılaştırma, Kitchen arayüzü, üye paneli, admin paneli) ve ilerideki mobil uygulamalar burada yer almaz.
+Bu repo **yalnızca backend**’dir. Tam web sitesi (video arka planlı ana sayfa, üyelik karşılaştırma, Kitchen arayüzü, üye paneli, admin paneli) ve ilerideki mobil uygulamalar burada yer almaz.
 
 #### 9. Uzun vadeli yol haritası (Faz 3)
 - Yerel mobil uygulamalar (iOS / Android)
